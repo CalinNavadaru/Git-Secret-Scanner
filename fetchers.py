@@ -10,11 +10,31 @@ class BaseCommitFetcher:
 
     def fetch(self, limit=10):
         commits = []
-        for commit in list(self.repo.iter_commits(max_count=limit)):
-            diff_text = "\n".join(d.diff.decode(errors="ignore") for d in commit.diff(create_patch=True))
-            commit_data = {"hash": commit.hexsha, "author": commit.author.name, "email": commit.author.email,
-                "date": str(commit.committed_datetime), "message": commit.message.strip(), "diff": diff_text, }
+        for commit in self.repo.iter_commits(max_count=limit):
+            parent = commit.parents[0] if commit.parents else None
+            diff_index = commit.diff(parent, create_patch=True)
+
+            file_diffs = []
+            for d in diff_index:
+                patch_text = d.diff.decode(errors="ignore")
+
+                file_diffs.append({
+                    "a_path": d.a_path,
+                    "b_path": d.b_path,
+                    "change_type": d.change_type,
+                    "patch": patch_text.splitlines(),
+                })
+
+            commit_data = {
+                "hash": commit.hexsha,
+                "author": commit.author.name,
+                "email": commit.author.email,
+                "date": str(commit.committed_datetime),
+                "message": commit.message.strip(),
+                "files": file_diffs,
+            }
             commits.append(commit_data)
+
         return commits
 
 

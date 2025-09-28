@@ -15,7 +15,7 @@ def check_repo_url(repo: str) -> bool:
 
 
 def get_repo_path(repo: str) -> str:
-    path_repo = os.path.realpath(repo, strict=True)
+    path_repo = os.path.realpath(os.path.expanduser(repo), strict=True)
     if not os.path.isdir(path_repo):
         raise ValueError("The provided path must pe a folder!")
     if not os.path.exists(os.path.join(path_repo, ".git")):
@@ -47,18 +47,19 @@ def main():
     limit = args.n
     output_filename = args.out
     batch_size = args.batch_size
-
+    print("Checking if the provided repository is a valid URL")
     if check_repo_url(args.repo):
-
+        print("Repository URL is validated.")
         analyzer_pipeline = CommitAnalyzerPipeline({"value": args.repo, "type": "url"}, os.getenv("HF_ACCESS_TOKEN"),
                                                    prompt, output_filename)
         print("Analyzing commits ...")
         analyzer_pipeline.analyze(limit, batch_size)
         print("Report generated!")
     else:
-        print("The provided argument is not an URL.\nTrying to see if it is a valid path.")
+        print("The provided argument is not an URL.\nTrying to see if it is a valid local path.")
         try:
             path_repo = get_repo_path(args.repo)
+            print("The provided repository path is valid.")
             analyzer_pipeline = CommitAnalyzerPipeline({"value": path_repo, "type": "path"},
                                                        os.getenv("HF_ACCESS_TOKEN"), prompt, output_filename)
             print("Analyzing commits ...")

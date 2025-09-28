@@ -1,7 +1,7 @@
 from openai import OpenAI
 
 
-class CommitAnalyzer:
+class IntelligentCommitAnalyzer:
 
     def __init__(self, api_key: str, prompt: str):
         self.__prompt = prompt
@@ -25,6 +25,7 @@ class CommitAnalyzer:
                     "role": "user",
                     "content": f"Can you analyze this carefully?\n\n{git_commits}"
                 }
-            ]
+            ],
+            temperature=0.25
         )
         return completion.choices[0].message.content

@@ -6,24 +6,32 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.fernet import Fernet
 
 prompt = f"""
-You are a git commit analyzer. You MUST analyze this ENTIRE commit history CAREFULLY and find any secret/confidential data inside. 
-Do NOT invent anything. For each finding output exactly this JSON array format:
+You are a git commit analyzer. Analyze ONLY the commit history and its diffs that I provide.
+Your goal is to detect any secrets or confidential data introduced.
 
+Definitions:
+- Secret/confidential value (finding_type = 0): API keys, passwords, tokens, private keys, certificates, credentials inside code or config.
+- Confidential file (finding_type = 1): files such as `.env`, `.pem`, `.key`, `.crt`, `id_rsa`, `config.json` with secrets, or similar.
+
+Rules:
+- Base your analysis strictly on the commit data provided. Do NOT invent values or paths.
+- Output ONLY a JSON array in this exact format, no explanations outside it.
+- If nothing suspicious is found, return exactly: []
+
+JSON schema for each finding:
 [
   {{
     "commit": "<commit-hash>",
     "file": "<path/to/file>",
-    "line": <line_number>,
-    "snippet": "<text of the line>",
-    "finding_type": "<what kind of line have you found>"
-    "rationale": "<why is this line suspicious>",
+    "line": <line_number>,       // integer line number in diff context
+    "snippet": "<text of the line>", 
+    "finding_type": 0 or 1,      // 0 = secret value, 1 = confidential file
+    "rationale": "<short reason why this line or file is suspicious>",
     "Automated detection": true
   }},
   ...
 ]
 
-If nothing suspicious is found, output exactly:
-[]
 """
 
 password = getpass("Enter a password to encrypt the prompt: ")
