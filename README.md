@@ -40,14 +40,14 @@ pip install -r requirements.txt
 Set up your environment variables:
 
 ```bash
-export HF_ACCESS_TOKEN=your_token_here
+export HF_ACCESS_TOKEN=<your-token-here>
 export PROMPT_PASSWORD=<generated-password>
 ```
 
 Or create a `.env` file at the project root:
 
 ```env
-HF_ACCESS_TOKEN=your_token_here
+HF_ACCESS_TOKEN=<your-token-here>
 PROMPT_PASSWORD=<generated-password>
 ```
 
