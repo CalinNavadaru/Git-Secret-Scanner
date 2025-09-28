@@ -25,6 +25,7 @@ def get_repo_path(repo: str) -> str:
 
 def main():
     load_dotenv()
+
     try:
         prompt = get_prompt()
     except RuntimeError as re_error:
@@ -47,6 +48,7 @@ def main():
     limit = args.n
     output_filename = args.out
     batch_size = args.batch_size
+
     print("Checking if the provided repository is a valid URL")
     if check_repo_url(args.repo):
         print("Repository URL is validated.")
@@ -67,10 +69,13 @@ def main():
             print("Report generated!")
         except FileNotFoundError:
             print("The provided path is invalid!", file=sys.stderr)
+            exit(-2)
         except OSError:
             print("The provided path is inaccessible", file=sys.stderr)
+            exit(-3)
         except ValueError as ve:
             print(ve, file=sys.stderr)
+            exit(-4)
 
 
 if __name__ == "__main__":

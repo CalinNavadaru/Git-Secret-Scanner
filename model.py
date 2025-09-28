@@ -23,7 +23,7 @@ class IntelligentCommitAnalyzer:
             messages=self.__messages + [
                 {
                     "role": "user",
-                    "content": f"Can you analyze this carefully?\n\n{git_commits}"
+                    "content": f"Can you analyze this git commits carefully?\n\n{git_commits}"
                 }
             ],
             temperature=0.25
